@@ -41,24 +41,30 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('ransom-sprite', 'assets/sprites/ransom_sprite_no_bg_v2_1773337354436.png');
 
         graphics.clear();
-        graphics.fillStyle(0x00ff00, 1);
-        graphics.fillRect(0, 0, 32, 32);
+        graphics.fillStyle(0x00ffff, 0.5);
+        graphics.fillCircle(16, 16, 16);
+        graphics.fillStyle(0xffffff, 1);
+        graphics.fillCircle(16, 16, 4);
         graphics.generateTexture('npc-sprite', 32, 32);
 
         graphics.clear();
-        graphics.fillStyle(0xffff00, 1);
+        graphics.fillStyle(0xffff00, 0.3);
         graphics.fillCircle(32, 32, 32);
+        graphics.fillStyle(0xffff00, 0.8);
+        graphics.fillCircle(32, 32, 8);
         graphics.generateTexture('shop-sprite', 64, 64);
 
         graphics.clear();
-        graphics.fillStyle(0x00008b, 1);
-        graphics.fillRect(0, 0, 64, 64);
+        graphics.fillStyle(0x0000ff, 0.3);
+        graphics.fillCircle(32, 32, 32);
+        graphics.fillStyle(0x0000ff, 0.8);
+        graphics.fillCircle(32, 32, 8);
         graphics.generateTexture('weapon-shop-sprite', 64, 64);
 
         graphics.clear();
         graphics.fillStyle(0xffffff, 1);
-        graphics.fillRect(0, 4, 24, 4);
-        graphics.generateTexture('web-bullet', 24, 8);
+        graphics.fillCircle(4, 4, 4);
+        graphics.generateTexture('web-bullet', 8, 8);
 
         // graphics.clear();
         // graphics.lineStyle(2, 0x1a1a1a, 1);
@@ -75,11 +81,7 @@ export default class GameScene extends Phaser.Scene {
             console.log('GameScene: Create starting');
             this.physics.world.setBounds(0, 0, this.mapWidth, this.mapHeight);
 
-            this.background = this.add.tileSprite(0, 0, this.mapWidth, this.mapHeight, 'grid-bg')
-                .setOrigin(0, 0)
-                .setDepth(-1)
-                .setTint(0x222222); // Darker for better contrast
-
+            this.cameras.main.setBackgroundColor('#000000');
             console.log('GameScene: Spawning player');
             this.player = new Protagonist(this, this.mapWidth / 2, this.mapHeight / 2);
             this.player.setScale(0.2); // Adjust scale for the detailed illustration
@@ -507,31 +509,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     updateEnvironmentEffect() {
-        if (!this.player || !this.archangel || !this.background) return;
-
-        const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.archangel.x, this.archangel.y);
-        const radius = 800; // Effect starts at this distance
-
-        if (dist < radius) {
-            const factor = 1 - (dist / radius); // 0 (far) to 1 (close)
-            
-            // Background becomes "prettier" (lighter and golden)
-            const r = Math.floor(68 + (255 - 68) * factor);
-            const g = Math.floor(68 + (255 - 68) * factor);
-            const b = Math.floor(68 + (200 - 68) * factor); // Less blue for a golden feel
-            this.background.setTint(Phaser.Display.Color.GetColor(r, g, b));
-            this.background.setAlpha(0.6 + (0.4 * factor));
-
-            // Draw a glowing aura
-            this.archangelGlow.clear();
-            this.archangelGlow.fillStyle(0xffffaa, 0.2 * factor);
-            this.archangelGlow.fillCircle(this.archangel.x, this.archangel.y, 200 * factor);
-            this.archangelGlow.fillStyle(0xffffff, 0.1 * factor);
-            this.archangelGlow.fillCircle(this.archangel.x, this.archangel.y, 400 * factor);
-        } else {
-            this.background.setTint(0x222222);
-            this.background.setAlpha(0.6);
-            this.archangelGlow.clear();
-        }
+        if (!this.player || !this.archangel) return;
+        this.archangelGlow.clear();
     }
 }
