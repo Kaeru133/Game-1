@@ -22,9 +22,10 @@ A 2D horror-RPG blending SAO’s atmosphere with glitch-horror elements.
 2.  **GitHub Pages Activation**:
     - Go to your repository settings on GitHub.com.
     - Go to `Settings > Pages`.
-    - Under `Build and deployment`, set source to `Deploy from a branch` and branch to `main` (folder `/root`).
-    - The game will be available at `https://[username].github.io/[repo-name]/`.
+    - Under `Build and deployment`, set source to **GitHub Actions**.
+    - The `deploy.yml` workflow will automatically build and publish the game.
+    - The game will be available at `https://[username].github.io/Game-1/`.
 
 ## Development
-- Run `npm run dev` to play locally.
-- Run `npm run build` for the final version before GitHub Desktop sync.
+- Run `npm run dev` to play locally (requires NodeJS).
+- The game uses a CDN for Phaser, making it more stable on different environments.

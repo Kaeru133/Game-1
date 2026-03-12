@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    // Base should be your repository name for GitHub Pages to work correctly
-    base: '/Game-1/',
+    // IMPORTANT: This must match your GitHub Repo name exactly
+    base: './',
     build: {
         outDir: 'dist',
         assetsDir: 'assets',
