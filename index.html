@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="./vite.svg" />
+  <link rel="icon" type="image/svg+xml" href="vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Weaving of Ransoms</title>
   <style>
@@ -22,12 +22,13 @@
       align-items: center;
     }
   </style>
-  <script type="module" crossorigin src="/Game-1/assets/index-DajitUUr.js"></script>
+  <!-- Usando CDN para garantir que o Phaser carregue mesmo se a instalação local estiver com problemas -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+  <script type="module" crossorigin src="./assets/index-CsuUSGmZ.js"></script>
 </head>
 
 <body>
   <div id="game-container"></div>
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 </body>
 
 </html>
