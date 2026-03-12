@@ -27,14 +27,18 @@ export default class GameScene extends Phaser.Scene {
         console.log('GameScene: Preload starting');
         const graphics = this.make.graphics({ x: 0, y: 0, add: false });
 
-        graphics.fillStyle(0xffffff, 1);
-        graphics.fillRect(0, 0, 32, 32);
-        graphics.generateTexture('player-sprite', 32, 32);
+        // graphics.fillStyle(0xffffff, 1);
+        // graphics.fillRect(0, 0, 32, 32);
+        // graphics.generateTexture('player-sprite', 32, 32);
+        // this.load.image('player-sprite', 'assets/sprites/protagonist.png');
+        this.load.image('player-sprite', 'assets/sprites/protagonist_sprite_no_bg_1773337148921.png');
 
-        graphics.clear();
-        graphics.fillStyle(0xff0000, 1);
-        graphics.fillRect(0, 0, 32, 32);
-        graphics.generateTexture('ransom-sprite', 32, 32);
+        // graphics.clear();
+        // graphics.fillStyle(0xff0000, 1);
+        // graphics.fillRect(0, 0, 32, 32);
+        // graphics.generateTexture('ransom-sprite', 32, 32);
+        // this.load.image('ransom-sprite', 'assets/sprites/ransom.png');
+        this.load.image('ransom-sprite', 'assets/sprites/ransom_sprite_no_bg_v2_1773337354436.png');
 
         graphics.clear();
         graphics.fillStyle(0x00ff00, 1);
@@ -56,10 +60,13 @@ export default class GameScene extends Phaser.Scene {
         graphics.fillRect(0, 4, 24, 4);
         graphics.generateTexture('web-bullet', 24, 8);
 
-        graphics.clear();
-        graphics.lineStyle(2, 0x1a1a1a, 1);
-        graphics.strokeRect(0, 0, 64, 64);
-        graphics.generateTexture('grid-bg', 64, 64);
+        // graphics.clear();
+        // graphics.lineStyle(2, 0x1a1a1a, 1);
+        // graphics.strokeRect(0, 0, 64, 64);
+        // graphics.generateTexture('grid-bg', 64, 64);
+        // this.load.image('grid-bg', 'assets/sprites/ground.png');
+        this.load.image('grid-bg', 'assets/sprites/creepy_rpg_ground_tile_1773335961842.png');
+        this.load.audio('bg-music', 'assets/audio/password-infinity-123276.mp3');
         console.log('GameScene: Preload finished successfully');
     }
 
@@ -68,12 +75,14 @@ export default class GameScene extends Phaser.Scene {
             console.log('GameScene: Create starting');
             this.physics.world.setBounds(0, 0, this.mapWidth, this.mapHeight);
 
-            this.add.tileSprite(0, 0, this.mapWidth, this.mapHeight, 'grid-bg')
+            this.background = this.add.tileSprite(0, 0, this.mapWidth, this.mapHeight, 'grid-bg')
                 .setOrigin(0, 0)
-                .setDepth(-1);
+                .setDepth(-1)
+                .setTint(0x444444); // Start dark
 
             console.log('GameScene: Spawning player');
             this.player = new Protagonist(this, this.mapWidth / 2, this.mapHeight / 2);
+            this.player.setScale(0.2); // Adjust scale for the detailed illustration
 
             this.ransoms = this.add.group({
                 classType: Ransom,
@@ -86,9 +95,11 @@ export default class GameScene extends Phaser.Scene {
                 const ry = Phaser.Math.Between(100, this.mapHeight - 100);
                 const r = new Ransom(this, rx, ry);
                 this.ransoms.add(r);
+                r.setScale(0.15); // Adjust scale for enemy artwork
             }
 
             this.boss = new Boss(this, 300, 300);
+            this.boss.setScale(0.6); // Scale up the boss image 
             this.ransoms.add(this.boss);
 
             this.shop = this.physics.add.staticImage(this.mapWidth / 2 - 200, this.mapHeight / 2, 'shop-sprite');
@@ -108,7 +119,12 @@ export default class GameScene extends Phaser.Scene {
             this.magicKey = this.input.keyboard.addKey(186); // keycode for 'ç'
 
             this.npcs = this.add.group({ classType: NPC, runChildUpdate: true });
-            this.npcs.add(new NPC(this, this.mapWidth / 2 + 300, this.mapHeight / 2, 'npc-sprite', 'Cuidado com os sussurros na escuridão...'));
+            this.archangel = new NPC(this, this.mapWidth / 2 + 1000, this.mapHeight / 2, 'npc-sprite', 'A luz prevalecerá... em breve você verá a verdade.');
+            this.archangel.setTint(0x00ffff).setScale(1.5);
+            this.npcs.add(this.archangel);
+
+            // Aura around Archangel
+            this.archangelGlow = this.add.graphics().setDepth(1);
 
             this.cameras.main.setBounds(0, 0, this.mapWidth, this.mapHeight);
             this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
@@ -146,6 +162,10 @@ export default class GameScene extends Phaser.Scene {
                 }
             });
 
+            // Add and play Background Music
+            this.bgMusic = this.sound.add('bg-music', { loop: true, volume: 0.5 });
+            this.bgMusic.play();
+
             console.log('GameScene: Create finished successfully');
         } catch (e) {
             console.error('CRITICAL ERROR:', e);
@@ -178,6 +198,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.updateNPCs();
         this.updateShops();
+        this.updateEnvironmentEffect(); // Background prettier effect
         this.updatePlayerActions(time, delta);
 
         this.isNearShop = false;
@@ -482,6 +503,35 @@ export default class GameScene extends Phaser.Scene {
             this.scoreText.setText('Ransoms: 0');
         } else {
             this.showDialogue("Você não tem corpos para entregar.");
+        }
+    }
+
+    updateEnvironmentEffect() {
+        if (!this.player || !this.archangel || !this.background) return;
+
+        const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.archangel.x, this.archangel.y);
+        const radius = 800; // Effect starts at this distance
+
+        if (dist < radius) {
+            const factor = 1 - (dist / radius); // 0 (far) to 1 (close)
+            
+            // Background becomes "prettier" (lighter and golden)
+            const r = Math.floor(68 + (255 - 68) * factor);
+            const g = Math.floor(68 + (255 - 68) * factor);
+            const b = Math.floor(68 + (200 - 68) * factor); // Less blue for a golden feel
+            this.background.setTint(Phaser.Display.Color.GetColor(r, g, b));
+            this.background.setAlpha(0.6 + (0.4 * factor));
+
+            // Draw a glowing aura
+            this.archangelGlow.clear();
+            this.archangelGlow.fillStyle(0xffffaa, 0.2 * factor);
+            this.archangelGlow.fillCircle(this.archangel.x, this.archangel.y, 200 * factor);
+            this.archangelGlow.fillStyle(0xffffff, 0.1 * factor);
+            this.archangelGlow.fillCircle(this.archangel.x, this.archangel.y, 400 * factor);
+        } else {
+            this.background.setTint(0x444444);
+            this.background.setAlpha(0.6);
+            this.archangelGlow.clear();
         }
     }
 }
