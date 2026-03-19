@@ -7,7 +7,7 @@ export default class Protagonist extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this);
         this.setCollideWorldBounds(true);
 
-        // Status do jogador
+        // Player status
         this.hp = 100;
         this.maxHp = 100;
         this.mana = 100;
