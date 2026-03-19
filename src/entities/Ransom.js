@@ -21,6 +21,9 @@ export default class Ransom extends Phaser.Physics.Arcade.Sprite {
         this.attackDuration = 5000;
         this.attackPause = 10000;
         this.killProgress = 0; // Tempo sendo 'pisado' pelo player
+        
+        this.timeSinceAttackStart = 0; // for telegraphing
+        this.isChaser = false;
 
         // Lasers (Shared Graphics in Scene)
         if (!scene.laserLayer) {
@@ -42,6 +45,7 @@ export default class Ransom extends Phaser.Physics.Arcade.Sprite {
     startAttack() {
         if (!this.active) return;
         this.isAttacking = true;
+        this.timeSinceAttackStart = 0;
         this.scene.time.delayedCall(this.attackDuration, () => {
             if (!this.active) return;
             this.stopAttack();
@@ -55,6 +59,10 @@ export default class Ransom extends Phaser.Physics.Arcade.Sprite {
 
     update(time, delta) {
         if (!this.active || !this.scene) return;
+
+        if (this.isChaser && this.scene.player && !this.scene.player.isDead) {
+            this.scene.physics.moveToObject(this, this.scene.player, 80); // Chasers are faster and hunt!
+        }
 
         // Jitter visual (Glitch) - Apenas se estiver perto da tela
         const cam = this.scene.cameras.main;
@@ -70,6 +78,7 @@ export default class Ransom extends Phaser.Physics.Arcade.Sprite {
 
             // Desenhar Lasers se estiver atacando
             if (this.isAttacking && this.scene.laserLayer) {
+                this.timeSinceAttackStart += delta;
                 this.drawLasers();
                 this.checkLaserCollision();
             }
@@ -78,7 +87,14 @@ export default class Ransom extends Phaser.Physics.Arcade.Sprite {
 
     drawLasers() {
         const layer = this.scene.laserLayer;
-        layer.lineStyle(4, 0xff0000, 0.8);
+        
+        const isTelegraph = (this.timeSinceAttackStart < 1500); // Telegraph for first 1.5s
+        
+        if (isTelegraph) {
+            layer.lineStyle(2, 0xff0000, 0.4); // Thin red warning line
+        } else {
+            layer.lineStyle(4, 0xff0000, 0.8); // Full attack laser
+        }
 
         const length = 150 * (this.isBoss ? 2 : 1);
         layer.lineBetween(this.x, this.y - length, this.x, this.y + length);
@@ -86,6 +102,8 @@ export default class Ransom extends Phaser.Physics.Arcade.Sprite {
     }
 
     checkLaserCollision() {
+        if (this.timeSinceAttackStart < 1500) return; // Telegraph phase deals no damage
+
         const player = this.scene.player;
         if (!player || player.isDead) return;
 

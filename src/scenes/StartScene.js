@@ -17,10 +17,10 @@ export default class StartScene extends Phaser.Scene {
 
         // Texto Introductório
         const loreText =
-            "Você é uma pequena e indefesa aranha, sem asas,\n" +
-            "perdida em um mundo de gigantes alados.\n\n" +
-            "O Rei Aranha espalhou mutações matemáticas\n" +
-            "conhecidas como 'Ransom' por este reino distorcido.";
+            "You are a small, defenseless spider without wings,\n" +
+            "lost in a world of winged giants.\n\n" +
+            "The Spider King has spread mathematical mutations\n" +
+            "known as 'Ransom' throughout this twisted realm.";
 
         this.add.text(400, 240, loreText, {
             fontSize: '18px',
@@ -32,10 +32,10 @@ export default class StartScene extends Phaser.Scene {
 
         // Objetivo
         const objectiveText =
-            "OBJETIVO:\n" +
-            "1. Explore a escuridão bipolar à esquerda.\n" +
-            "2. Colete as distorções vermelhas (Ransoms).\n" +
-            "3. Encontre as respostas antes que a luz apague.";
+            "OBJECTIVE:\n" +
+            "1. Explore the bipolar darkness to the left.\n" +
+            "2. Collect the red distortions (Ransoms).\n" +
+            "3. Find the answers before the light goes out.";
 
         this.add.text(400, 380, objectiveText, {
             fontSize: '18px',
@@ -45,7 +45,7 @@ export default class StartScene extends Phaser.Scene {
             fontFamily: 'monospace'
         }).setOrigin(0.5);
 
-        this.add.text(400, 520, "Aperte duas vezes qualquer tecla ou clique duas vezes para entrar no abismo", {
+        this.add.text(400, 520, "Double press any key or double click to enter the abyss", {
             fontSize: '16px',
             fill: '#ffffff',
             fontFamily: 'monospace'

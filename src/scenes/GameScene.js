@@ -105,10 +105,10 @@ export default class GameScene extends Phaser.Scene {
             this.ransoms.add(this.boss);
 
             this.shop = this.physics.add.staticImage(this.mapWidth / 2 - 200, this.mapHeight / 2, 'shop-sprite');
-            this.add.text(this.shop.x, this.shop.y - 50, 'TROCA', { fontSize: '16px', fill: '#ffff00', fontFamily: 'monospace' }).setOrigin(0.5);
+            this.add.text(this.shop.x, this.shop.y - 50, 'EXCHANGE', { fontSize: '16px', fill: '#ffff00', fontFamily: 'monospace' }).setOrigin(0.5);
 
             this.weaponShop = this.physics.add.staticImage(this.mapWidth / 2 + 500, this.mapHeight / 2, 'weapon-shop-sprite');
-            this.add.text(this.weaponShop.x, this.weaponShop.y - 50, 'ARMAS', { fontSize: '16px', fill: '#0000ff', fontFamily: 'monospace' }).setOrigin(0.5);
+            this.add.text(this.weaponShop.x, this.weaponShop.y - 50, 'WEAPONS', { fontSize: '16px', fill: '#0000ff', fontFamily: 'monospace' }).setOrigin(0.5);
 
             this.webs = this.physics.add.group();
             this.soundBarrierLayer = this.add.graphics().setDepth(50);
@@ -121,7 +121,7 @@ export default class GameScene extends Phaser.Scene {
             this.magicKey = this.input.keyboard.addKey(186); // keycode for 'ç'
 
             this.npcs = this.add.group({ classType: NPC, runChildUpdate: true });
-            this.archangel = new NPC(this, this.mapWidth / 2 + 1000, this.mapHeight / 2, 'npc-sprite', 'A luz prevalecerá... em breve você verá a verdade.');
+            this.archangel = new NPC(this, this.mapWidth / 2 + 1000, this.mapHeight / 2, 'npc-sprite', 'The light will prevail... soon you will see the truth.');
             this.archangel.setTint(0x00ffff).setScale(1.5);
             this.npcs.add(this.archangel);
 
@@ -132,7 +132,7 @@ export default class GameScene extends Phaser.Scene {
             this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
 
             this.scoreText = this.add.text(20, 20, 'Ransoms: 0', { fontSize: '18px', fill: '#ff0000' }).setScrollFactor(0).setDepth(2000);
-            this.coinsText = this.add.text(20, 50, 'Moedas: 0', { fontSize: '18px', fill: '#ffff00' }).setScrollFactor(0).setDepth(2000);
+            this.coinsText = this.add.text(20, 50, 'Coins: 0', { fontSize: '18px', fill: '#ffff00' }).setScrollFactor(0).setDepth(2000);
             this.statusText = this.add.text(20, 80, 'HP: 100 | MANA: 100', { fontSize: '18px', fill: '#00ff00' }).setScrollFactor(0).setDepth(2000);
 
             this.physics.add.overlap(this.player, this.ransoms, this.handleRansomCombat, null, this);
@@ -148,7 +148,7 @@ export default class GameScene extends Phaser.Scene {
             this.dialogueBox.add([bgbx, this.dialogueText]);
 
             // Pause functionality
-            this.pauseText = this.add.text(400, 300, 'PAUSADO\n[ESC] para continuar', {
+            this.pauseText = this.add.text(400, 300, 'PAUSED\n[ESC] to continue', {
                 fontSize: '48px', fill: '#ffffff', align: 'center', fontFamily: 'monospace', fontStyle: 'bold'
             }).setOrigin(0.5).setScrollFactor(0).setDepth(10000).setVisible(false);
 
@@ -241,7 +241,7 @@ export default class GameScene extends Phaser.Scene {
         });
 
         if (targetRansom && !this.dialogueBox.visible) {
-            this.setInteractionText('[.] Atacar');
+            this.setInteractionText('[.] Attack');
             if (Phaser.Input.Keyboard.JustDown(this.attackKey)) {
                 targetRansom.takeDamage((this.player.clawLevel > 1) ? 40 : 10);
             }
@@ -299,7 +299,7 @@ export default class GameScene extends Phaser.Scene {
         // Logic for Weapon Shop (ARMAS)
         if (distWeaponShop < threshold) {
             if (!this.isWeaponShopOpen) {
-                this.setInteractionText('[E] Abrir Loja de Armas');
+                this.setInteractionText('[E] Open Weapon Shop');
                 if (Phaser.Input.Keyboard.JustDown(this.interactKey)) {
                     this.openWeaponShop();
                     this.setInteractionText('');
@@ -312,7 +312,7 @@ export default class GameScene extends Phaser.Scene {
         // Logic for Body Exchange (TROCA)
         if (distShop < threshold) {
             if (!this.isExchangeOpen) {
-                this.setInteractionText('[E] Entregar Corpos');
+                this.setInteractionText('[E] Turn in Bodies');
                 if (Phaser.Input.Keyboard.JustDown(this.interactKey)) {
                     this.visitShop();
                     this.setInteractionText('');
@@ -368,11 +368,11 @@ export default class GameScene extends Phaser.Scene {
 
     updateWeaponShopDialogue() {
         const items = [
-            `Fieira Aprimorada - 100 Moedas`,
-            `Garras Aprimoradas - 150 Moedas`,
-            `Restaurar HP (+20) - 20 Moedas`
+            `Upgraded Spinneret - 100 Coins`,
+            `Upgraded Claws - 150 Coins`,
+            `Restore HP (+20) - 20 Coins`
         ];
-        let menuText = "ARMAZÉM DE COMBATE\n(W/S para selecionar, Enter para comprar)\n\n";
+        let menuText = "COMBAT STORE\n(W/S to select, Enter to buy)\n\n";
         items.forEach((item, i) => {
             menuText += (this.shopSelection === i ? "> " : "  ") + item + "\n";
         });
@@ -385,18 +385,18 @@ export default class GameScene extends Phaser.Scene {
                 this.coins -= 100;
                 this.player.spinneretLevel = 1;
                 this.updateCoinsUI();
-                this.showDialogue("Fieira comprada! Pressione ç para disparar.\n(Purchase something else?)");
+                this.showDialogue("Spinneret purchased! Press ç to shoot.\n(Purchase something else?)");
             } else {
-                this.showDialogue(this.player.spinneretLevel > 0 ? "Você já tem a Fieira." : "Moedas insuficientes (100).");
+                this.showDialogue(this.player.spinneretLevel > 0 ? "You already have the Spinneret." : "Not enough coins (100).");
             }
         } else if (this.shopSelection === 1) { // Garras
             if (this.player.clawLevel === 1 && this.coins >= 150) {
                 this.coins -= 150;
                 this.player.clawLevel = 2; // Nível 2 = Dano x4
                 this.updateCoinsUI();
-                this.showDialogue("Garras Aprimoradas compradas!\n(Purchase something else?)");
+                this.showDialogue("Upgraded Claws purchased!\n(Purchase something else?)");
             } else {
-                this.showDialogue(this.player.clawLevel > 1 ? "Você já tem as Garras." : "Moedas insuficientes (150).");
+                this.showDialogue(this.player.clawLevel > 1 ? "You already have the Claws." : "Not enough coins (150).");
             }
         } else if (this.shopSelection === 2) { // HP
             if (this.coins >= 20) {
@@ -404,15 +404,15 @@ export default class GameScene extends Phaser.Scene {
                 this.player.hp = Math.min(this.player.maxHp, this.player.hp + 20);
                 this.updateCoinsUI();
                 this.updateStatusUI();
-                this.showDialogue("HP Restaurado!\n(Purchase something else?)");
+                this.showDialogue("HP Restored!\n(Purchase something else?)");
             } else {
-                this.showDialogue("Moedas insuficientes (20).");
+                this.showDialogue("Not enough coins (20).");
             }
         }
     }
 
     updateCoinsUI() {
-        if (this.coinsText) this.coinsText.setText('Moedas: ' + this.coins);
+        if (this.coinsText) this.coinsText.setText('Coins: ' + this.coins);
     }
 
     updateNPCs() {
@@ -421,7 +421,7 @@ export default class GameScene extends Phaser.Scene {
             if (Phaser.Math.Distance.Between(this.player.x, this.player.y, npc.x, npc.y) < 100) { near = true; this.activeNPC = npc; }
         });
         if (near && !this.dialogueBox.visible) {
-            this.setInteractionText('[E] Falar');
+            this.setInteractionText('[E] Talk');
             if (Phaser.Input.Keyboard.JustDown(this.interactKey)) this.showDialogue(this.activeNPC.dialogue);
         } else if (!near) {
             // Only clear text/dialogue if it's NOT a shop that's currently open
@@ -460,9 +460,9 @@ export default class GameScene extends Phaser.Scene {
         ransom.disableBody(true, true);
 
         if (ransom.isBoss) {
-            this.showDialogue("O Rei Ransom caiu...");
+            this.showDialogue("Lord. Rans has fallen...");
             this.coins += 50;
-            if (this.coinsText) this.coinsText.setText('Moedas: ' + this.coins);
+            if (this.coinsText) this.coinsText.setText('Coins: ' + this.coins);
         }
 
         this.score += 1;
@@ -490,7 +490,7 @@ export default class GameScene extends Phaser.Scene {
 
     gameOver() {
         this.player.isDead = true; this.player.setVelocity(0).setAlpha(0.5); this.physics.pause();
-        this.add.text(400, 300, 'VOCÊ FOI CONSUMIDO\n[R] Reiniciar', { fontSize: '32px', fill: '#ff0000', align: 'center' }).setOrigin(0.5).setScrollFactor(0).setDepth(5000);
+        this.add.text(400, 300, 'YOU WERE CONSUMED\n[R] Restart', { fontSize: '32px', fill: '#ff0000', align: 'center' }).setOrigin(0.5).setScrollFactor(0).setDepth(5000);
         this.input.keyboard.once('keydown-R', () => this.scene.restart());
     }
 
@@ -499,12 +499,12 @@ export default class GameScene extends Phaser.Scene {
         if (this.score > 0) {
             const reward = this.score * 10;
             this.coins += reward;
-            this.coinsText.setText('Moedas: ' + this.coins);
-            this.showDialogue(`Nice doing business.\nEntregou ${this.score} corpos.`);
+            this.coinsText.setText('Coins: ' + this.coins);
+            this.showDialogue(`Nice doing business.\nTurned in ${this.score} bodies.`);
             this.score = 0;
             this.scoreText.setText('Ransoms: 0');
         } else {
-            this.showDialogue("Você não tem corpos para entregar.");
+            this.showDialogue("You have no bodies to turn in.");
         }
     }
 
